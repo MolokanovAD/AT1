@@ -55,11 +55,7 @@ int main(int argc, char* argv[]) {
                     else
                         *correctness_report.at(correctness_report.size() - 1) += " not correct";
                 }
-                catch (std::runtime_error& ex) {
-                    std::cout << ex.what();
-                }
-                catch (const SmcException& smcex)
-                {
+                catch (std::runtime_error&) {
                     retcode = 1;
                 }
                 thisContext.reset();
@@ -69,7 +65,6 @@ int main(int argc, char* argv[]) {
             of += ".result";
             std::ofstream outFile(of);
             of.erase(sz) += ".check";
-
             std::ofstream outFile1(of);
             for (auto i : correctness_report) {
                 outFile1 << *i << std::endl;
@@ -81,4 +76,5 @@ int main(int argc, char* argv[]) {
         else
             std::cerr << "Error: can't open the file" << std::endl;
     }
+    return retcode;
 }
