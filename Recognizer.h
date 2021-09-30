@@ -17,7 +17,8 @@ public:
 	Recognizer() :_fsm(*this), isAcceptable(true), readName(false),mainGoal(""){}
 	bool isNameRead() { return readName; }
 	void createGoal();
-	void writeSymbol(char);
+	void writeMainGoal(char);
+	void writeReqGoal(char);
 	void nameRead() { readName = true; }
 	bool checkEqual();
 	bool checkString(const char*);

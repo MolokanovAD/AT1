@@ -9,39 +9,41 @@
 // State		Transition		End State		Action(s)
 Start
 {
-				Space			nil				{}
-				Letter(L:char)	ReadName		{createGoal();writeSymbol(L);}
-				Digit(D:char)	Error			{}
-				Colon			Error			{}
-				Unknown			Error			{}
+				Letter(L:char)[ctxt.isNameRead() ]	
+								ReadName		{createGoal();writeReqGoal(L);}
+				Letter(L:char)	ReadName		{writeMainGoal(L);}
+
 				EOS [!ctxt.checkEqual()]
 								OK				{}
-				EOS				Error			{Unacceptable();}
 }
 ReadName
 {
-				Space [ctxt.isNameRead() ]
+				Space [ctxt.isNameRead() && !ctxt.checkEqual()]
 								Start			{}
 				Space			Error			{}
-				Letter(L:char)	nil				{writeSymbol(L);}
-				Digit(D:char)	nil				{writeSymbol(D);}
+				Letter(L:char)[ctxt.isNameRead()]
+								nil				{writeReqGoal(L);}
+				Letter(L:char)	nil				{writeMainGoal(L);}
+				Digit(D:char)[ctxt.isNameRead()]
+								nil				{writeReqGoal(D);}
+				Digit(D:char)	nil				{writeMainGoal(D);}
 				Colon [ctxt.isNameRead() ]
 								Error			{}
 				Colon			Start			{nameRead();}
-				Unknown			Error			{}
 				EOS [!ctxt.checkEqual()]
 								OK				{}
-				EOS				Error			{Unacceptable();}
 }
 OK
 {}
 Error
+{}
+Default
 {
 				Space			nil				{}
 				Letter(L:char)  nil				{}
-				Digit(D:char)	nil				{}
-				Colon			nil				{}
-				Unknown			nil				{}
-				EOS				nil				{Unacceptable();}
+				Digit(D:char)	Error			{}
+				Colon			Error			{}
+				Unknown			Error			{}
+				EOS				Error			{Unacceptable();}
 }
 %%

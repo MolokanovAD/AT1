@@ -55,7 +55,19 @@ void RecognizerState::Default(RecognizerContext& context)
 
 }
 
-void Map1_Start::Colon(RecognizerContext& context)
+void Map1_Default::Space(RecognizerContext& context)
+{
+
+
+}
+
+void Map1_Default::Letter(RecognizerContext& context, char L)
+{
+
+
+}
+
+void Map1_Default::Digit(RecognizerContext& context, char D)
 {
 
     context.getState().Exit(context);
@@ -64,11 +76,40 @@ void Map1_Start::Colon(RecognizerContext& context)
 
 }
 
-void Map1_Start::Digit(RecognizerContext& context, char D)
+void Map1_Default::Colon(RecognizerContext& context)
 {
 
     context.getState().Exit(context);
     context.setState(Map1::Error);
+    context.getState().Entry(context);
+
+}
+
+void Map1_Default::Unknown(RecognizerContext& context)
+{
+
+    context.getState().Exit(context);
+    context.setState(Map1::Error);
+    context.getState().Entry(context);
+
+}
+
+void Map1_Default::EOS(RecognizerContext& context)
+{
+    Recognizer& ctxt = context.getOwner();
+
+    context.getState().Exit(context);
+    context.clearState();
+    try
+    {
+        ctxt.Unacceptable();
+        context.setState(Map1::Error);
+    }
+    catch (...)
+    {
+        context.setState(Map1::Error);
+        throw;
+    }
     context.getState().Entry(context);
 
 }
@@ -86,19 +127,7 @@ void Map1_Start::EOS(RecognizerContext& context)
     }
     else
     {
-        context.getState().Exit(context);
-        context.clearState();
-        try
-        {
-            ctxt.Unacceptable();
-            context.setState(Map1::Error);
-        }
-        catch (...)
-        {
-            context.setState(Map1::Error);
-            throw;
-        }
-        context.getState().Entry(context);
+         Map1_Default::EOS(context);
     }
 
 }
@@ -107,35 +136,39 @@ void Map1_Start::Letter(RecognizerContext& context, char L)
 {
     Recognizer& ctxt = context.getOwner();
 
-    context.getState().Exit(context);
-    context.clearState();
-    try
+    if (ctxt.isNameRead() )
     {
-        ctxt.createGoal();
-        ctxt.writeSymbol(L);
-        context.setState(Map1::ReadName);
+        context.getState().Exit(context);
+        context.clearState();
+        try
+        {
+            ctxt.createGoal();
+            ctxt.writeReqGoal(L);
+            context.setState(Map1::ReadName);
+        }
+        catch (...)
+        {
+            context.setState(Map1::ReadName);
+            throw;
+        }
+        context.getState().Entry(context);
     }
-    catch (...)
+    else
     {
-        context.setState(Map1::ReadName);
-        throw;
+        context.getState().Exit(context);
+        context.clearState();
+        try
+        {
+            ctxt.writeMainGoal(L);
+            context.setState(Map1::ReadName);
+        }
+        catch (...)
+        {
+            context.setState(Map1::ReadName);
+            throw;
+        }
+        context.getState().Entry(context);
     }
-    context.getState().Entry(context);
-
-}
-
-void Map1_Start::Space(RecognizerContext& context)
-{
-
-
-}
-
-void Map1_Start::Unknown(RecognizerContext& context)
-{
-
-    context.getState().Exit(context);
-    context.setState(Map1::Error);
-    context.getState().Entry(context);
 
 }
 
@@ -173,18 +206,37 @@ void Map1_ReadName::Digit(RecognizerContext& context, char D)
 {
     Recognizer& ctxt = context.getOwner();
 
-    RecognizerState& endState = context.getState();
+    if (ctxt.isNameRead())
+    {
+        RecognizerState& endState = context.getState();
 
-    context.clearState();
-    try
-    {
-        ctxt.writeSymbol(D);
-        context.setState(endState);
+        context.clearState();
+        try
+        {
+            ctxt.writeReqGoal(D);
+            context.setState(endState);
+        }
+        catch (...)
+        {
+            context.setState(endState);
+            throw;
+        }
     }
-    catch (...)
+    else
     {
-        context.setState(endState);
-        throw;
+        RecognizerState& endState = context.getState();
+
+        context.clearState();
+        try
+        {
+            ctxt.writeMainGoal(D);
+            context.setState(endState);
+        }
+        catch (...)
+        {
+            context.setState(endState);
+            throw;
+        }
     }
 
 }
@@ -202,19 +254,7 @@ void Map1_ReadName::EOS(RecognizerContext& context)
     }
     else
     {
-        context.getState().Exit(context);
-        context.clearState();
-        try
-        {
-            ctxt.Unacceptable();
-            context.setState(Map1::Error);
-        }
-        catch (...)
-        {
-            context.setState(Map1::Error);
-            throw;
-        }
-        context.getState().Entry(context);
+         Map1_Default::EOS(context);
     }
 
 }
@@ -223,18 +263,37 @@ void Map1_ReadName::Letter(RecognizerContext& context, char L)
 {
     Recognizer& ctxt = context.getOwner();
 
-    RecognizerState& endState = context.getState();
+    if (ctxt.isNameRead())
+    {
+        RecognizerState& endState = context.getState();
 
-    context.clearState();
-    try
-    {
-        ctxt.writeSymbol(L);
-        context.setState(endState);
+        context.clearState();
+        try
+        {
+            ctxt.writeReqGoal(L);
+            context.setState(endState);
+        }
+        catch (...)
+        {
+            context.setState(endState);
+            throw;
+        }
     }
-    catch (...)
+    else
     {
-        context.setState(endState);
-        throw;
+        RecognizerState& endState = context.getState();
+
+        context.clearState();
+        try
+        {
+            ctxt.writeMainGoal(L);
+            context.setState(endState);
+        }
+        catch (...)
+        {
+            context.setState(endState);
+            throw;
+        }
     }
 
 }
@@ -243,7 +302,7 @@ void Map1_ReadName::Space(RecognizerContext& context)
 {
     Recognizer& ctxt = context.getOwner();
 
-    if (ctxt.isNameRead() )
+    if (ctxt.isNameRead() && !ctxt.checkEqual())
     {
         context.getState().Exit(context);
         // No actions.
@@ -265,56 +324,6 @@ void Map1_ReadName::Unknown(RecognizerContext& context)
     context.getState().Exit(context);
     context.setState(Map1::Error);
     context.getState().Entry(context);
-
-}
-
-void Map1_Error::Colon(RecognizerContext& context)
-{
-
-
-}
-
-void Map1_Error::Digit(RecognizerContext& context, char D)
-{
-
-
-}
-
-void Map1_Error::EOS(RecognizerContext& context)
-{
-    Recognizer& ctxt = context.getOwner();
-
-    RecognizerState& endState = context.getState();
-
-    context.clearState();
-    try
-    {
-        ctxt.Unacceptable();
-        context.setState(endState);
-    }
-    catch (...)
-    {
-        context.setState(endState);
-        throw;
-    }
-
-}
-
-void Map1_Error::Letter(RecognizerContext& context, char L)
-{
-
-
-}
-
-void Map1_Error::Space(RecognizerContext& context)
-{
-
-
-}
-
-void Map1_Error::Unknown(RecognizerContext& context)
-{
-
 
 }
 

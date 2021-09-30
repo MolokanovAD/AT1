@@ -67,6 +67,12 @@ public:
     : RecognizerState(name, stateId)
     {};
 
+    virtual void Space(RecognizerContext& context);
+    virtual void Letter(RecognizerContext& context, char L);
+    virtual void Digit(RecognizerContext& context, char D);
+    virtual void Colon(RecognizerContext& context);
+    virtual void Unknown(RecognizerContext& context);
+    virtual void EOS(RecognizerContext& context);
 };
 
 class Map1_Start :
@@ -77,12 +83,8 @@ public:
     : Map1_Default(name, stateId)
     {};
 
-    virtual void Colon(RecognizerContext& context);
-    virtual void Digit(RecognizerContext& context, char D);
     virtual void EOS(RecognizerContext& context);
     virtual void Letter(RecognizerContext& context, char L);
-    virtual void Space(RecognizerContext& context);
-    virtual void Unknown(RecognizerContext& context);
 };
 
 class Map1_ReadName :
@@ -119,12 +121,6 @@ public:
     : Map1_Default(name, stateId)
     {};
 
-    virtual void Colon(RecognizerContext& context);
-    virtual void Digit(RecognizerContext& context, char D);
-    virtual void EOS(RecognizerContext& context);
-    virtual void Letter(RecognizerContext& context, char L);
-    virtual void Space(RecognizerContext& context);
-    virtual void Unknown(RecognizerContext& context);
 };
 
 class RecognizerContext :

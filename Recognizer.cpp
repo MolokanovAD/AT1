@@ -28,14 +28,13 @@ bool Recognizer::checkString(const char* c) {
 }
 
 void Recognizer::createGoal() {
-    if(readName)
         goals.push_back(std::shared_ptr<std::string>(new std::string("")));
 }
-void Recognizer::writeSymbol(char L) {
-    if (readName && !goals.empty())
-        *(goals.at(goals.size() - 1)) += L;
-    else
+void Recognizer::writeMainGoal(char L) {
         mainGoal += L;
+}
+void Recognizer::writeReqGoal(char L) {
+        *(goals.at(goals.size() - 1)) += L;
 }
 
 bool Recognizer::checkEqual() {
