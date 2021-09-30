@@ -1,0 +1,47 @@
+// -*- tab-width: 4; -*-
+
+%start Map1::Start
+%class Recognizer
+%header   Recognizer.h
+
+%map Map1
+%%
+// State		Transition		End State		Action(s)
+Start
+{
+				Space			nil				{}
+				Letter(L:char)	ReadName		{createGoal();writeSymbol(L);}
+				Digit(D:char)	Error			{}
+				Colon			Error			{}
+				Unknown			Error			{}
+				EOS [!ctxt.checkEqual()]
+								OK				{}
+				EOS				Error			{Unacceptable();}
+}
+ReadName
+{
+				Space [ctxt.isNameRead() ]
+								Start			{}
+				Space			Error			{}
+				Letter(L:char)	nil				{writeSymbol(L);}
+				Digit(D:char)	nil				{writeSymbol(D);}
+				Colon [ctxt.isNameRead() ]
+								Error			{}
+				Colon			Start			{nameRead();}
+				Unknown			Error			{}
+				EOS [!ctxt.checkEqual()]
+								OK				{}
+				EOS				Error			{Unacceptable();}
+}
+OK
+{}
+Error
+{
+				Space			nil				{}
+				Letter(L:char)  nil				{}
+				Digit(D:char)	nil				{}
+				Colon			nil				{}
+				Unknown			nil				{}
+				EOS				nil				{Unacceptable();}
+}
+%%
